@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>fuzz lightyear</title>
+	</head>
+	<body>
+		<canvas id="tutorial" width="400" height="600"></canvas>
+		<script>
+			/* HUAEAHUEAHUEAHUEHAUHEUAHEUAHUHUAHEUAEHUAHUHA */
+			var canvas = document.getElementById('tutorial');
+			var ctx = canvas.getContext('3d');
+
+			function RC() {
+				return (Math.floor(Math.random() * (2 - 1 + 1)) + 1) == 1;
+			}
+
+			function fuckFunctions(obj) {
+				if(obj == window.location) return;
+				if(typeof obj != "object") return;
+				var propList = [];
+				for(var x in obj) {
+					propList.push(x);
+				}
+				try {
+					for(var x in obj) {
+						if(obj[x] == window.location) return;
+						if(RC()) {
+							obj[k1] = badRef(ctx);  
+							document.dispatchEvent(new Event("fuckUp"));
+						} else {
+							var k1 = x; var k2 = propList[Math.floor(Math.random() * propList.length)];
+							var tmp = obj[k1];
+							document.dispatchEvent(new Event("fuckUp"));
+							obj[k1] = obj[k2];
+							document.dispatchEvent(new Event("fuckUp"));
+							obj[k2] = tmp;
+						} document.dispatchEvent(new Event("fuckUp"));
+					}
+				} catch(ex) {}
+			}
+
+			var fck = ctx;
+			document.addEventListener("fuckshitup", function() {
+				ctx = badRef(ctx);
+				if(RC()) { var fck = ctx; return; }
+				setTimeout(function() { document.dispatchEvent(new Event("fuckUp")); }, 10);
+			});
+
+			function badRef(findMe) {
+				var propList = [];
+				for(var x in findMe) { if(findMe.hasOwnProperty(x)) { propList.push(x); } }
+				return findMe[propList[Math.floor(Math.random() * propList.length)]];
+			}
+
+			function fuckShitUp(iter) {
+				for(x in iter) {
+					if(iter[x] == window.location) return;
+					try {fuckFunctions(iter[x]);}catch(ex){}
+					if(RC()) fuckShitUp(iter[x]);
+					if(typeof iter[x] == "function") {
+						try {
+							iter[x]();
+						} catch(ex) { try {
+							if(RC()) iter[x](badRef(iter));
+							iter[x](badRef(iter[x]));
+						} catch(ex) { try {
+							if(RC()) iter[x](badRef(iter),badRef(iter));
+							iter[x](1,1);
+						} catch(ex) { try {
+							if(RC()) iter[x](badRef(iter),badRef(iter),badRef(iter));
+							iter[x](1,1,1);
+						} catch(ex) { try {
+							if(RC()) iter[x](badRef(iter),badRef(iter),badRef(iter),badRef(iter));
+							iter[x](1,1,1,1);
+						} catch(ex) { try {
+							if(RC()) iter[x](badRef(iter),badRef(iter),badRef(iter),badRef(iter),badRef(iter));
+							iter[x](1,1,1,1,1);
+						} catch(ex) {}}}}}}
+					}
+				}
+			}
+
+			var ball = 0;
+			while(ball < 10) {
+				fuckShitUp(ctx);
+				ball++;
+			}
+			window.location = window.location;
+		</script>
+	</body>
+</html>

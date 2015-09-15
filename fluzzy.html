@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>fluzzy</title>
+	</head>
+	<body>
+		<canvas id="tutorial" width="400" height="600"></canvas>
+		<script>
+			var blacklist = {
+				"parentNode" : 1,
+				"nextSibling" : 1,
+				"previousSibling" : 1,
+				"top" : 1,
+				"parent" : 1,
+				"opener" : 1,
+				"ownerDocument" : 1,
+				"parentElement" : 1,
+				"parentTextEdit" : 1,
+				"offsetParent" : 1,
+				"DOCUMENT_POSITION_PRECEDING" : 1,
+				"document" : 1,
+				"activeElement" : 1,
+				"documentElement" : 1,
+				"onbeforeunload" : 1
+			};
+
+			var fuckvals = [true, false, Infinity, navigator, -6, "error", "AAAAAAAAAAAAA", NaN, -999999999999999999,
+			"http://google.com/", "file:///tmp/x", "javascript:alert('fuck')", alert, window, function(){delete this;}];
+
+			function RC(list) {
+				if(typeof list != "object") return;
+				return list[Math.floor(Math.random() * list.length)];
+			}
+
+			function randref(inThis) {
+				if(typeof inThis != "object") return;
+				var propList = [];
+				for(var x in inThis) { propList.push(x); }
+				return inThis[RC(propList)];
+			}
+
+			function propWalk(walkMe) {
+				if(typeof walkMe != "object") return;
+				for(var x in walkMe) {
+					if(blacklist[x] == 1) return;
+					for(var j=0; j<10; j++) {
+						try {
+							walkMe[x] = RC([randref(ctx3d),randref(walkMe),ctx3d,RC(fuckvals),walkMe]);
+						} catch(ex) {}
+					} try {
+						eval(walkMe[x]);
+						delete walkMe[x];
+					} catch(ex) {}
+				}
+			}
+
+			var canvas = document.getElementById("tutorial");
+			var ctx3d = canvas.getContext("2d");
+
+			var i = 0;
+			while(i < 1000) {
+				for(x in ctx3d) {
+					if(typeof ctx3d[x] != "function") {
+						try {
+							if(blacklist[x] == 1) break;
+							ctx3d[x] = RC([randref(ctx3d[x]),randref(ctx3d),canvas,RC(fuckvals)]);
+						} catch(e) {}
+					}
+					if(typeof ctx3d[x] == "function") {
+						var sl = [randref(ctx3d[x]), randref(ctx3d), ctx3d, canvas, RC(fuckvals)];
+						try {
+						ctx3d[x](RC(sl));
+						} catch (e) { try {
+						ctx3d[x](RC(sl),RC(sl));
+						} catch (e) { try {
+						ctx3d[x](RC(sl),RC(sl),RC(sl));
+						} catch (e) { try {
+						ctx3d[x](RC(sl),RC(sl),RC(sl),RC(sl));
+						} catch (e) { try {
+						ctx3d[x](RC(sl),RC(sl),RC(sl),RC(sl),RC(sl));
+						} catch (e) { try {
+						ctx3d[x](RC(sl),RC(sl),RC(sl),RC(sl),RC(sl),RC(sl));
+						} catch (e) {}}}}}}
+					}
+					propWalk(ctx3d[x]);
+				}
+				propWalk(ctx3d);
+				i++;
+			}
+		</script>
+	</body>
+</html>
