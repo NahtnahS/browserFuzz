@@ -26,7 +26,7 @@
 			};
 
 			var fuckvals = [true, false, Infinity, navigator, -6, "error", "AAAAAAAAAAAAA", NaN, -999999999999999999,
-			"http://google.com/", "file:///tmp/x", "javascript:alert('fuck')", alert, window, function(){delete this;}];
+			"http://google.com/", "file:///tmp/x", window, function(){delete this;}];
 
 			function RC(list) {
 				if(typeof list != "object") return;
@@ -56,10 +56,9 @@
 			}
 
 			var canvas = document.getElementById("tutorial");
-			var ctx3d = canvas.getContext("2d");
+			var ctx3d = window;
 
-			var i = 0;
-			while(i < 1000) {
+			for(var i = 0; i<100; i++) {
 				for(x in ctx3d) {
 					if(typeof ctx3d[x] != "function") {
 						try {
@@ -86,8 +85,7 @@
 					propWalk(ctx3d[x]);
 				}
 				propWalk(ctx3d);
-				i++;
-			}
+			} window.location = window.location;
 		</script>
 	</body>
 </html>
