@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>fluzysuzie</title>
+	</head>
+	<body>
+		<p>select loreum ipsum</p><button id="go">go</button>
+		<script>
+			document.designMode="on";
+
+			var coms = {
+				"backcolor": 1,
+				"bold": 0,
+				"createlink": 1,
+				"decreasefontsize": 0,
+				"fontname": 1,
+				"fontsize": 1,
+				"forecolor": 1,
+				"formatblock": 1,
+				"heading": 1,
+				"hilitecolor": 0,
+				"increasefontsize": 0,
+				"indent": 0,
+				"inserthorizontalrule": 0,
+				"inserthtml": 1,
+				"insertimage": 1,
+				"insertorderedlist": 0,
+				"insertunorderedlist": 0,
+				"insertparagraph": 0,
+				"italic": 0,
+				"justifycenter": 0,
+				"justifyfull": 0,
+				"justifyleft": 0,
+				"justifyright": 0,
+				"outdent": 0,
+				"redo": 0,
+				"removeformat": 0,
+				"selectall": 0,
+				"strikethrough": 0,
+				"styleWithCSS": 1,
+				"subscript": 0,
+				"superscript": 0,
+				"underline": 0,
+				"undo": 0,
+				"unlink": 0
+			};
+
+			var bad = [
+				true, false, Infinity, -6, "error", bad,
+				"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+				NaN, -999999999999999999, "http://google.com/",
+				"file:///tmp/x", window, document, navigator,
+				alert, "javascript://alert(this)", this, [], {}
+			];
+
+			function RC(list) {
+				return list[Math.floor(Math.random() * list.length)];
+			}
+
+			function fluzysuzie() {
+				var selection = window.getSelection();
+				while(true) {
+					var range = document.createRange();
+					range.selectNodeContents(document.body);
+					selection.removeAllRanges();
+					selection.addRange(range);
+					var cmd = RC(Object.keys(coms));
+					if(coms.cmd) {
+						if(RC([1,0])) setTimeout(function() {document.execCommand(cmd, false, RC(bad))}, 10);
+						document.execCommand(cmd, false, RC(bad));
+					} else {
+						document.execCommand(cmd, false, null);
+					}
+				}
+			}
+
+			document.getElementById("go").onclick = fluzysuzie;
+		</script>
+	</body>
+</html>
