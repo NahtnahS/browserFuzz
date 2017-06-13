@@ -1,0 +1,58 @@
+<!--
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/watch
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy
+http://soft.vub.ac.be/~tvcutsem/proxies/
+https://code.google.com/p/es-lab/source/browse/trunk/src/proxies/tracer.html
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy/handler/apply
+http://www.2ality.com/2014/12/es6-proxies.html
+http://ariya.ofilabs.com/2013/07/es6-and-proxy.html
+https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial
+https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API
+https://developer.mozilla.org/en-US/docs/Web/API/Window/crypto
+https://developer.mozilla.org/en-US/docs/Web/API/window/getDefaultComputedStyle
+https://developer.mozilla.org/en-US/docs/Web/API/Window/document
+https://developer.mozilla.org/en-US/docs/Web/API/document
+https://developer.mozilla.org/en-US/docs/Web/HTML/Using_the_application_cache
+https://developer.mozilla.org/en-US/docs/Web/API/TextDecoder/decode
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/__defineGetter__
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/watch
+-->
+<!DOCTYPE html>
+<html>
+	<head><title>The fuzzician</title></head>
+	<body>
+		<iframe id="ifr" src="http://localhost"></iframe>
+		<iframe id="tst" src="//a"></iframe>
+		<script>
+			var interceptor = {
+				get: function(t, p, v) {
+					// console.log("get " + p);
+					if(p in t) {
+						if(p == "byteLength") return 99999999;
+						// if (typeof t[p] === "function") {
+							// console.log("it's a function, retval is: ", t[p]);
+							// return t[p];
+							// return Function.prototype.bind.call(t[p], t);
+						// }
+						// console.log("it's a plain value: ", t[p]);
+						// return f1.contentWindow.document.body;
+						// return t[p];
+					}
+				},
+				set: function (r, p, v) {
+					r[p] = v;
+				}
+			};
+
+			// https://developer.mozilla.org/en-US/docs/Web/API/Document/importNode
+			var f1 = document.getElementById("ifr");
+			var f2 = document.getElementById("tst");
+			var x = new Proxy(f2, interceptor);
+			console.log(f1.contentWindow.NodeList);
+			console.log(f2.contentWindow.NodeList);
+			document.body.appendChild(document.importNode(x.contentWindow, true));
+		</script>
+	</body>
+</html>
+
