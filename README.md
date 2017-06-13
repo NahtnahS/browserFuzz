@@ -1,6 +1,6 @@
 # browserFuzz
-A simple python2 fuzzer for browsers, the set-up is still hard-coded to run against chromium.
+A collection of in-browser Javascript fuzzers and a Python2-server
+browser fuzzer. All old, none very good, all abandoned.
 
-The logic for genAttr() was inspired by a Javascript fuzzer I saw, but I do not remember what it was called.
-
-This hasn't found anything that I could reliably reproduce so I decided to make it public.
+I'm now focusing on newer, better in-browser fuzzing. This repo is 
+kept for prosperity and amusement.
