@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+	<head><meta charset="UTF-8"></meta><title>iFuzz</title></head>
+	<body>
+		<button id="control" onclick="go()">Start</button><span id="tps"></span>
+		<script>
+			function R(rv)      { return Math.round(Math.random() * 10) % rv; }
+			function RR(mi, ma) { return Math.floor(Math.random() * (ma - mi) + mi); }
+			function RC(L)      { return L[R(L.length)]; }
+
+			var running = false, avgCountTimeout = null, iter = 0;
+			function go() {
+				function doAvg() {
+					document.getElementById("tps").innerHTML = " avg <b>" + iter/5 + "</b> t/s";
+					iter = 0;
+				}
+				var control = document.getElementById("control");
+				if (!running) {
+					running = true;
+					control.innerHTML = "Stop";
+					avgCountTimeout = setInterval(doAvg, 5000);
+					run();
+				} else {
+					running = false;
+					control.innerHTML = "Start";
+					clearInterval(avgCountTimeout);
+				}
+			}
+
+			function run() {
+				if(!running) return;
+				// Test stuff
+				var theCode = "";
+				theCode += "stage=document.createElement(\"div\");stage.id=\"stage\";document.body.appendChild(stage);\n";
+				theCode += "cv = document.createElement(\"canvas\"); stage.appendChild(cv);\n";
+				theCode += "ifr = document.createElement(\"iframe\"); stage.appendChild(ifr);\n";
+				
+				var aFunThing = RC(["cv", "ifr"]);
+				
+				eval(theCode);
+				// fuck with the properties
+				// fuck with the styles of the canvas element
+				// remove it on a watch, or an event
+				// add watch() and such to fuck with random properties
+
+				// for(i = 0; i < R(5); i++) {
+				// 	switch(R(37)) {
+				// 		case 0:
+				// 			ctx.arc();
+				// 		case 1:
+				// 			ctx.arcTo();
+				// 		case 2:
+				// 			ctx.beginPath();
+				// 		case 3:
+				// 			ctx.beizerCurveTo();
+				// 		case 4:
+				// 			ctx.clearRect();
+				// 		case 5:
+				// 			ctx.clip();
+				// 		case 6:
+				// 			ctx.closePath();
+				// 		case 7:
+				// 			ctx.createImageData();
+				// 		case 8:
+				// 			ctx.createLinearGradient();
+				// 		case 9:
+				// 			ctx.createPattern();
+				// 		case 10:
+				// 			ctx.createRadialGradient();
+				// 		case 11:
+				// 			ctx.drawFocusIfNeeded();
+				// 		case 12:
+				// 			ctx.drawImage();
+				// 		case 13:
+				// 			ctx.fill();
+				// 		case 14:
+				// 			ctx.fillRect();
+				// 		case 15:
+				// 			ctx.fillText();
+				// 		case 16:
+				// 			ctx.getImageData();
+				// 		case 17:
+				// 			ctx.getLineDash();
+				// 		case 18:
+				// 			ctx.isPointInPath();
+				// 		case 19:
+				// 			ctx.isPointInStroke();
+				// 		case 20:
+				// 			ctx.lineTo();
+				// 		case 21:
+				// 			ctx.measureText();
+				// 		case 22:
+				// 			ctx.moveTo();
+				// 		case 23:
+				// 			ctx.putImageData();
+				// 		case 24:
+				// 			ctx.quadraticCurveTo();
+				// 		case 25:
+				// 			ctx.rect();
+				// 		case 26:
+				// 			ctx.restore();
+				// 		case 27:
+				// 			ctx.rotate();
+				// 		case 28:
+				// 			ctx.save();
+				// 		case 29:
+				// 			ctx.scale();
+				// 		case 30:
+				// 			ctx.setLineDash();
+				// 		case 31:
+				// 			ctx.setTransform();
+				// 		case 32:
+				// 			ctx.stroke();
+				// 		case 33:
+				// 			ctx.strokeRect();
+				// 		case 34:
+				// 			ctx.strokeText();
+				// 		case 35:
+				// 			ctx.transform();
+				// 		case 36:
+				// 			ctx.translate();
+				// 	}
+				// }
+
+				// Teardown
+				document.body.removeChild(document.getElementById("stage"));
+
+				// Queue up next test
+				setTimeout(run, 0);
+			}
+		</script>
+	</body>
+</html>

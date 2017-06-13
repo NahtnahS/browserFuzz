@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+	<head><title>DOMParser fuzzer</title></head>
+	<body>
+		<button id="control" onclick="go()">Start</button>
+		<span id="tps"></span>
+		<script>
+			function R(rv) { return Math.round(Math.random() * 10) % rv; }
+
+			function RR(mi, ma) { return Math.floor(Math.random() * (ma - mi) + mi); }
+
+			function RC(L) { return L[R(L.length)]; }
+
+			function genJunkstr(l) {
+				for (var j = 0, r = ""; j < l; j++, r += String.fromCharCode(RR(39, 128)));
+				return r;
+			}
+
+			function testExpression(exp) {
+				var test = document.createElement("div");
+				document.body.appendChild(test);
+				try {
+					var X = new DOMParser().parseFromString(exp, "text/html");
+					test.appendChild(X.firstChild.children[0].children[1].children[0]);
+				} catch (e) { test.innerHTML = exp; }
+				try {
+					var nt = test;
+					RC(nt.childNodes).focus();
+					nt.RC(nt.childNodes).hasAttribute(genJunkstr(5));
+					nt.replaceChild(RC(nt.childNodes), RC(nt.childNodes));
+				} catch (e) {}
+				try { document.body.removeChild(test); } catch (e) { alert("couldn't remove child!"); }
+			}
+
+			function genTag(rLevel) {
+				var rval = "";
+
+				var tags = ["!--", "--", "!DOCTYPE", "a", "abbr", "acronym",
+					"address", "applet", "area", "article", "aside", "audio",
+					"b", "base", "basefont", "bdi", "bdo", "big", "blockquote",
+					"body", "br", "button", "canvas", "caption", "center",
+					"cite", "code", "col", "colgroup", , "canvas", "datalist", "dd", "del",
+					"details", "dfn", "dialog", "dir", "div", "dl", "dt", "em",
+					"embed", "fieldset", "figcaption", "figure", "font",
+					"footer", "form", "frame", "frameset", "h1", "h2", "h3",
+					"h4", "h5", "h6", "head", "header", "hgroup", "hr", "html",
+					"i", "iframe", "img", "input", "ins", "kbd", "keygen",
+					"label", "legend", "li", "link", "main", "map", "mark",
+					"menu", "menuitem", "meta", "meter", "nav", "noframes",
+					"noscript", "object", "ol", "optgroup", "option", "output",
+					"p", "param", "pre", "progress", "q", "rp", "rt", "ruby",
+					"s", "samp", "script", "section", "select", "small",
+					"source", "span", "strike", "strong", "style", "sub",
+					"summary", "sup", "table", "tbody", "td", "textarea",
+					"tfoot", "th", "thead", "time", "title", "tr", "track",
+					"tt", "u", "ul", "var", "video", "wbr"];
+
+				switch (R(2)) {
+					case 0:
+						rval += "<" + tags[RR(0, tags.length)] + " ";
+						break;
+					case 1:
+						rval += "<" + tags[RR(0, tags.length)] + genJunkstr(RR(0, 10)) + " ";
+						break;
+					case 2:
+						if(typeof rLevel == "undefined" || rLevel < 2)
+							rval += "<" + genTag(rLevel+1) + ">";
+						break;
+					case 3:
+						rval += "</" + tags[RR(0, tags.length)] + " ";
+						break;
+				}
+
+				rval += genAttr() + ">";
+
+				return rval;
+			}
+
+			function genAttr(rLevel) {
+				var rval = " ";
+
+				var attrs = ["hidden", "high", "href", "hreflang", "http-equiv",
+					"icon", "id", "ismap", "itemprop", "keytype", "kind",
+					"label", "lang", "language", "list", "loop", "low",
+					"manifest", "max", "maxlength", "media", "method", "min",
+					"multiple", "name", "novalidate", "open", "optimum",
+					"pattern", "ping", "placeholder", "poster", "preload",
+					"pubdate", "radiogroup", "readonly", "rel", "required",
+					"reversed", "rows", "rowspan", "sandbox", "spellcheck",
+					"scope", "scoped", "seamless", "selected", "shape", "size",
+					"sizes", "span", "src", "srcdoc", "srclang", "srcset",
+					"start", "step", "style", "summary", "tabindex", "target",
+					"title", "type", "usemap", "value", "width", "wrap",
+					"border", "buffered", "challenge", "charset", "checked",
+					"cite", "class", "code", "codebase", "color", "cols",
+					"colspan", "content", "contenteditable", "contextmenu",
+					"controls", "coords", "data", "data-*", "datetime",
+					"default", "defer", "dir", "dirname", "disabled",
+					"download", "draggable", "dropzone", "enctype", "for",
+					"form", "formaction", "headers", "height", "accept",
+					"accept-charset", "accesskey", "action", "align", "alt",
+					"async", "autocomplete", "autofocus", "autoplay",
+					"autosave", "bgcolor"];
+
+				for (var i = 0; i < RR(0, attrs.length); i++) {
+					switch (R(10)) {
+						case 0:
+						case 1:
+						case 2:
+						case 3:
+						case 4:
+						case 5:
+						case 6:
+							rval += attrs[RR(0, attrs.length)] + " ";
+							break;
+						case 7:
+							rval += genJunkstr(RR(0, 10)) + " ";
+							break;
+						case 8:
+							rval += genBadval() + " ";
+							break;
+						case 9:
+							if(typeof rLevel == "undefined" || rLevel < 2)
+								rval += genAttr(rLevel+1) + " ";
+							break;
+					}
+
+					switch (R(4)) {
+						case 0:
+							rval += "='" + genBadval() + "' ";
+							break;
+						case 1:
+							rval += "='' ";
+							break;
+						case 2:
+							rval += "='" + genJunkstr(RR(0, 200)) + "' ";
+							break;
+						case 4:
+							rval += " ";
+							break;
+					}
+				}
+
+				return rval;
+			}
+
+			function genStr(c, l) {
+				for (var j = 0, r = ""; j < l; j++, r += c);
+				return r;
+			}
+
+			function genBadval() {
+				var rval = "";
+
+				switch ((R(3))) {
+					case 0:
+						rval += "http://";
+						break;
+					case 1:
+						rval += "javascript:";
+						break;
+					case 2:
+						rval += "file://";
+						break;
+					case 4:
+						// rval += "news://";
+						// break;
+					case 5:
+						// rval += genJunkstr(RR(0, 50)) + "://";
+						// break;
+					case 6:
+						break;
+				}
+				switch (R(5)) {
+					case 0:
+						rval += genStr("X", 1024) + " ";
+					case 1:
+						rval += "-1";
+						break;
+					case 2:
+						rval += "\\'2@@-=-- ";
+						break;
+					case 3:
+						rval += "badval ";
+						break;
+					case 4:
+						rval += genJunkstr(RR(0, 100)) + " ";
+						break;
+					// case 5:
+					// 	rval += genJunkstr(RR(0, 100)) + "://";
+					// 	break;
+				}
+				return rval;
+			}
+
+			var running = false;
+			var runTimeout = null, avgCountTimeout = null;
+			var iter = 0, iterAvg = 0;
+
+			function go() {
+				var control = document.getElementById("control");
+				if (!running) {
+					running = true;
+					control.innerHTML = "Stop";
+					runTimeout = setInterval( function() { iterAvg += iter; iter = 0; }, 1000 );
+					avgCountTimeout = setInterval(
+						function() {
+							var TPS = document.getElementById("tps");
+							TPS.innerHTML = " avg <b>" + iterAvg/5 + "</b> t/s";
+							if(iterAvg / 5 > 100) TPS.style.color="red";
+							if(iterAvg / 5 > 130) TPS.style.color="yellow";
+							if(iterAvg / 5 > 160) TPS.style.color="green";
+							iterAvg = 0;
+						},
+						5000
+					);
+					run();
+				} else {
+					running = false;
+					control.innerHTML = "Start";
+					clearInterval(runTimeout);
+					clearInterval(avgCountTimeout);
+				}
+			}
+
+			function run() {
+				iter += 1;
+				if (running) {
+					var cur = genTag();
+					testExpression(cur);
+					setTimeout(run, 0);
+				}
+			}
+
+		</script>
+	</body>
+</html>
+

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+	<head><meta charset="UTF-8"></meta><title>Fuzzics</title></head>
+	<body>
+		<iframe id="ifr" src="//s"></iframe>
+		<iframe id="tst" src="http://localhost"></iframe>
+		<script>
+			var f1 = document.getElementById("ifr");
+			var f2 = document.getElementById("tst");
+			f1.watch("contentWindow.document.body",
+				function(x, y, z) {
+					console.log(x, y, z); return document;
+				}
+			);
+			f1.__defineGetter__(
+				"contentWindow",
+				function(x, y, z) { return f2.contentWindow; }
+			);
+			var x = document.importNode(f1.contentWindow.document.body, true);
+			document.body.appendChild(x);
+		</script>
+	</body>
+</html>
+

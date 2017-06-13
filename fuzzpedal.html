@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+	<head><meta charset="UTF-8"></meta><title>Fuzz pedal</title></head>
+	<iframe src="" id="f"></iframe>
+	<canvas id="t"></canvas>
+	<body>
+		<script>
+			GLOBLEN = 100;
+			var incept = {
+				get: function(t,p,v) {
+					console.log(t,p,v);
+					if(p in t) {
+						if(typeof t[p] == "function") {
+							console.log("func:", p);
+							if(p == "toString") {
+								return function() { delete x; };
+							}
+							if(p == "valueOf") {
+								return function() { return x; };
+							}
+							try {
+								var y = Function.prototype.bind.call(t[p], t)(v);
+								// console.log(y);
+							} catch(e) {}
+							return Function.prototype.bind.call(t[p], t);
+						}
+						console.log("val:", t[p]); 
+						if(p == "byteLength") return 2000;
+						return t[p];
+					}
+				}
+			};
+			y = [];
+			x = new Proxy(y, incept);
+			x.watch("length", function() { return GLOBLEN; }); //4294967295
+			try { x.push("gg"); } catch(e) {}
+			console.log(window.btoa(x));
+			// z = new window.URL(x);
+			// fuck = new Blob(x, {type: 'image/svg+xml;charset=utf-8'});
+			// fuck.watch("byteLength", function() { return 1000; });
+			// fuck.watch("size", function() { return 1000; });
+			// fuck.__defineGetter__("size", function() { return 1000; });
+
+			// c = document.getElementById("t");
+			// cp = new Proxy(c, incept);
+
+			// ctx = cp.getContext("2d");
+			// fuck = new Proxy(ctx, incept);
+			// f = document.getElementById("f");
+			// f.src = window.URL.createObjectURL(fuck);
+
+			// a = {};
+			// a[Symbol.toPrimitive] = function(hint) {
+			// 	if (hint == "number") {
+			// 		return 10;
+			// 	}
+			// 	if (hint == "string") {
+			// 		return "UTF-8";
+			// 	}
+			// 	return true;
+			// }
+
+			// a.byteLength = 999;
+			// a.watch("byteLength", function() { return 999; });
+			// a.__defineGetter__("byteLength", function() { return 999; });
+
+			// p = new Proxy(a, incept);
+			// ae = new AnimationEvent(p);
+		</script>
+	</body>
+</html>
+
